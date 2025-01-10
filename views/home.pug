@@ -1,0 +1,15 @@
+extends layout.pug
+
+block content
+  .container
+    h1 Add an user
+    form(action="/add" method="POST" class="form")
+      .form-group
+        label(for="name") Name
+        input(type="text" id="name" name="name" required)
+
+      .form-group
+        label(for="birth") Date
+        input(type="date" id="birth" name="birth" required)
+
+      button(type="submit" class="btn btn-submit") Add

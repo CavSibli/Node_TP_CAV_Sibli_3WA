@@ -1,0 +1,18 @@
+extends layout.pug
+
+block title
+  title Users
+
+block styles
+  link(rel="stylesheet" href="/products.css")
+
+block content
+  h1 Liste des utilisateurs
+
+  ul
+    each user, index in users
+      li
+        | #{user.name} - #{user.birth}
+        form(action="/delete" method="POST" class="delete-form")
+          input(type="hidden" name="index" value=index)
+          button(type="submit" class="btn btn-submit") Supp
