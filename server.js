@@ -2,8 +2,9 @@ const http = require("http");
 const pug = require("pug");
 require("dotenv").config();
 const fs = require("fs");
+const { formatDate } = require("./utils"); 
 
-const { PORT, LOCALHOST } = process.env;
+const { APP_PORT, APP_LOCALHOST } = process.env;
 
 const server = http.createServer((req, res) => {
   switch (req.url) {
@@ -25,18 +26,13 @@ const server = http.createServer((req, res) => {
         });
 
         req.on("end", () => {
-          //console.log(body);
           const [nameField, birthField] = body.split("&");
-          //console.log(nameField, birthField);
           const name = nameField.split("=")[1];
-          //console.log(name);
           const birth = birthField.split("=")[1];
-          //console.log(birth);
-
 
           fs.readFile("./Data/users.json", "utf-8", (err, data) => {
             if (err) {
-              res.writeHead(500, { "Content-Type": "text/plain" });
+              res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
               res.end("Erreur lors de la lecture du fichier users.json");
               return;
             }
@@ -46,7 +42,7 @@ const server = http.createServer((req, res) => {
 
             fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
               if (err) {
-                res.writeHead(500, { "Content-Type": "text/plain" });
+                res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
                 res.end("Erreur lors de l'écriture dans le fichier users.json");
                 return;
               }
@@ -61,33 +57,82 @@ const server = http.createServer((req, res) => {
 
     case "/users":
       if (req.method === "GET") {
-
         fs.readFile("./Data/users.json", "utf-8", (err, data) => {
           if (err) {
-            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
             res.end("Erreur lors de la lecture du fichier users.json");
             return;
           }
 
           const users = JSON.parse(data);
+
+          
+          const formattedUsers = users.map(user => ({
+            name: user.name,
+            birth: formatDate(user.birth), 
+          }));
+
           const usersHtml = pug.renderFile("./views/users.pug", {
             pageTitle: "Users",
-            users: users,
+            users: formattedUsers,
           });
 
-          res.writeHead(200, { "Content-Type": "text/html" });
+          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
           res.end(usersHtml);
         });
       }
       break;
 
+      case "/delete":
+        if (req.method === "POST") {
+          let body = "";
+          req.on("data", chunk => {
+            body += chunk.toString();
+          });
+  
+          req.on("end", () => {
+            const idField = body.split("=")[1]; 
+            const index = parseInt(idField, 10); 
+  
+            fs.readFile("./Data/users.json", "utf-8", (err, data) => {
+              if (err) {
+                res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                res.end("Erreur lors de la lecture du fichier users.json");
+                return;
+              }
+  
+              const users = JSON.parse(data);
+  
+              if (isNaN(index) || index < 0 || index >= users.length) {
+                res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+                res.end("Index invalide");
+                return;
+              }
+  
+              users.splice(index, 1); 
+  
+              fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
+                if (err) {
+                  res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                  res.end("Erreur lors de l'écriture dans le fichier users.json");
+                  return;
+                }
+  
+                res.writeHead(302, { Location: "/users" });
+                res.end();
+              });
+            });
+          });
+        }
+    break;
+
     default:
-      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
       res.end("Page non trouvée");
       break;
   }
 });
 
-server.listen(PORT || 8000, LOCALHOST || "localhost", () => {
-  console.log(`Server is running at http://${LOCALHOST || "localhost"}:${PORT || 8000}`);
+server.listen(APP_PORT, APP_LOCALHOST, () => {
+  console.log(`Server is running at http://${APP_LOCALHOST}:${APP_PORT}`);
 });
