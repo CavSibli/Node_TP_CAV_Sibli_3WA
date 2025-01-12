@@ -18,42 +18,61 @@ const server = http.createServer((req, res) => {
       }
       break;
 
-    case "/add":
-      if (req.method === "POST") {
-        let body = "";
-        req.on("data", chunk => {
-          body += chunk.toString();
-        });
-
-        req.on("end", () => {
-          const [nameField, birthField] = body.split("&");
-          const name = nameField.split("=")[1];
-          const birth = birthField.split("=")[1];
-
-          fs.readFile("./Data/users.json", "utf-8", (err, data) => {
-            if (err) {
-              res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-              res.end("Erreur lors de la lecture du fichier users.json");
+      case "/add":
+        if (req.method === "POST") {
+          let body = "";
+          req.on("data", chunk => {
+            body += chunk.toString();
+          });
+  
+          req.on("end", () => {
+            const [nameField, birthField] = body.split("&");
+            const name = nameField.split("=")[1];
+            const birth = birthField.split("=")[1];
+  
+            // Définition des erreurs possibles et regex pour valider le prénom
+            const errors = [];
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+  
+            // Vérification du prénom
+            if (name.trim() === "") {
+              errors.push("Le prénom ne peut pas être vide.");
+            }
+            if (!nameRegex.test(name)) {
+              errors.push("Le prénom ne doit contenir que des lettres, des espaces, des apostrophes ou des tirets.");
+            }
+  
+            // Si des erreurs sont détectées, les renvoyer au client
+            if (errors.length > 0) {
+              res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+              res.end("Erreur(s) de validation :\n" + errors.join("\n"));
               return;
             }
-
-            const users = JSON.parse(data);
-            users.push({ name, birth });
-
-            fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
+  
+            fs.readFile("./Data/users.json", "utf-8", (err, data) => {
               if (err) {
                 res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-                res.end("Erreur lors de l'écriture dans le fichier users.json");
+                res.end("Erreur lors de la lecture du fichier users.json");
                 return;
               }
-
-              res.writeHead(302, { Location: "/users" });
-              res.end();
+  
+              const users = JSON.parse(data);
+              users.push({ name, birth });
+  
+              fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
+                if (err) {
+                  res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                  res.end("Erreur lors de l'écriture dans le fichier users.json");
+                  return;
+                }
+  
+                res.writeHead(302, { Location: "/users" });
+                res.end();
+              });
             });
           });
-        });
-      }
-      break;
+        }
+        break;
 
     case "/users":
       if (req.method === "GET") {
