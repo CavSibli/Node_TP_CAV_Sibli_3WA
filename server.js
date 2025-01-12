@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
               errors.push("Le prénom ne peut pas être vide.");
             }
             if (!nameRegex.test(name)) {
-              errors.push("Le prénom ne doit contenir que des lettres, des espaces, des apostrophes ou des tirets.");
+              errors.push("Le prénom ne doit contenir que des lettres ou des tirets.");
             }
   
             

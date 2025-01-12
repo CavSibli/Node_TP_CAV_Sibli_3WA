@@ -3,15 +3,15 @@ extends layout.pug
 block content
   span(class="border")
     .container
-      h1 Add an user
+      h1 Ajouter un utilisateur
       form(action="/add" method="POST" class="form")
         .mb-3
-          label(for="name" class="form-label") Name
+          label(for="name" class="form-label") prenom
           input(type="text" id="name" name="name" class="form-control" aria-describedby="nameHelp" required)
-          div#nameHelp.form-text Enter a valid name.
+          div#nameHelp.form-text Entrer un prénom qui ne contient que des lettres et des tirets
 
         .mb-3
-          label(for="birth" class="form-label") Date of Birth
+          label(for="birth" class="form-label") Date de Naissance
           input(type="date" id="birth" name="birth" class="form-control" required)
 
-        button(type="submit" class="btn btn-primary") Add
+        button(type="submit" class="btn btn-primary") Ajouter
