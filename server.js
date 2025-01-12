@@ -30,11 +30,11 @@ const server = http.createServer((req, res) => {
             const name = nameField.split("=")[1];
             const birth = birthField.split("=")[1];
   
-            // Définition des erreurs possibles et regex pour valider le prénom
+           
             const errors = [];
             const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
   
-            // Vérification du prénom
+            
             if (name.trim() === "") {
               errors.push("Le prénom ne peut pas être vide.");
             }
@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
               errors.push("Le prénom ne doit contenir que des lettres, des espaces, des apostrophes ou des tirets.");
             }
   
-            // Si des erreurs sont détectées, les renvoyer au client
+            
             if (errors.length > 0) {
               res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
               res.end("Erreur(s) de validation :\n" + errors.join("\n"));
