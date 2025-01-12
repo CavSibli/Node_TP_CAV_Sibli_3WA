@@ -48,24 +48,31 @@ const server = http.createServer((req, res) => {
               res.end("Erreur(s) de validation :\n" + errors.join("\n"));
               return;
             }
-
-            const users = JSON.parse(data);
-            users.push({ name, birth });
-
-            fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
+  
+            fs.readFile("./Data/users.json", "utf-8", (err, data) => {
               if (err) {
                 res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
-                res.end("Erreur lors de l'écriture dans le fichier users.json");
+                res.end("Erreur lors de la lecture du fichier users.json");
                 return;
               }
-
-              res.writeHead(302, { Location: "/users" });
-              res.end();
+  
+              const users = JSON.parse(data);
+              users.push({ name, birth });
+  
+              fs.writeFile("./Data/users.json", JSON.stringify(users, null, 2), err => {
+                if (err) {
+                  res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+                  res.end("Erreur lors de l'écriture dans le fichier users.json");
+                  return;
+                }
+  
+                res.writeHead(302, { Location: "/users" });
+                res.end();
+              });
             });
           });
-        });
-      }
-      break;
+        }
+        break;
 
     case "/users":
       if (req.method === "GET") {
