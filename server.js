@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
   
            
             const errors = [];
-            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+            const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]([A-Za-zÀ-ÖØ-öø-ÿ\s'-]*[A-Za-zÀ-ÖØ-öø-ÿ])?$/;
   
             
             if (name.trim() === "") {
