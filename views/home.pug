@@ -1,15 +1,17 @@
 extends layout.pug
 
 block content
-  .container
-    h1 Add an user
-    form(action="/add" method="POST" class="form")
-      .form-group
-        label(for="name") Name
-        input(type="text" id="name" name="name" required)
+  span(class="border")
+    .container
+      h1 Add an user
+      form(action="/add" method="POST" class="form")
+        .mb-3
+          label(for="name" class="form-label") Name
+          input(type="text" id="name" name="name" class="form-control" aria-describedby="nameHelp" required)
+          div#nameHelp.form-text Enter a valid name.
 
-      .form-group
-        label(for="birth") Date
-        input(type="date" id="birth" name="birth" required)
+        .mb-3
+          label(for="birth" class="form-label") Date of Birth
+          input(type="date" id="birth" name="birth" class="form-control" required)
 
-      button(type="submit" class="btn") Add
+        button(type="submit" class="btn btn-primary") Add

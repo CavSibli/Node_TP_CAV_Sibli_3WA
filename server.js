@@ -18,7 +18,7 @@ const server = http.createServer((req, res) => {
       }
       break;
 
-      case "/add":
+    case "/add":
         if (req.method === "POST") {
           let body = "";
           req.on("data", chunk => {
@@ -102,7 +102,7 @@ const server = http.createServer((req, res) => {
       }
       break;
 
-      case "/delete":
+    case "/delete":
         if (req.method === "POST") {
           let body = "";
           req.on("data", chunk => {
