@@ -3,4 +3,5 @@
 
 Cloner le repo
 npm i
+npm i nodemon
 npm start
